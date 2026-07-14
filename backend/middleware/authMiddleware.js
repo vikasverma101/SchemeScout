@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken')
+import jwt from 'jsonwebtoken'
 
-function protect(req, res, next) {
+export function protect(req, res, next) {
   const authHeader = req.headers.authorization || ''
   const token = authHeader.startsWith('Bearer ')
     ? authHeader.slice('Bearer '.length)
@@ -18,6 +18,4 @@ function protect(req, res, next) {
     return res.status(401).json({ message: 'Unauthorized: invalid token.' })
   }
 }
-
-module.exports = { protect }
 

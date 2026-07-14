@@ -1,5 +1,5 @@
-const assert = require('assert')
-const { buildRecommendationPayload, normalizeAiJson } = require('../services/aiService')
+import assert from 'assert'
+import { buildRecommendationPayload, normalizeAiJson } from '../services/aiService.js'
 
 const sampleSchemes = [
   {

@@ -1,7 +1,7 @@
-const Scheme = require('../models/Scheme')
-const User = require('../models/User')
+import Scheme from '../models/Scheme.js'
+import User from '../models/User.js'
 
-async function saveScheme(req, res) {
+export async function saveScheme(req, res) {
   const { schemeId } = req.body || {}
   const userId = req.user?.userId
 
@@ -41,7 +41,7 @@ async function saveScheme(req, res) {
   return res.status(201).json({ message: 'Scheme saved.' })
 }
 
-async function listSavedSchemes(req, res) {
+export async function listSavedSchemes(req, res) {
   const userId = req.user?.userId
   const user = await User.findById(userId).select('savedSchemes').lean()
   if (!user) {
@@ -50,6 +50,4 @@ async function listSavedSchemes(req, res) {
 
   return res.json({ savedSchemes: user.savedSchemes ?? [] })
 }
-
-module.exports = { saveScheme, listSavedSchemes }
 

@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken')
-const User = require('../models/User')
+import jwt from 'jsonwebtoken'
+import User from '../models/User.js'
 
 function signToken(user) {
   return jwt.sign(
@@ -9,7 +9,7 @@ function signToken(user) {
   )
 }
 
-async function signup(req, res) {
+export async function signup(req, res) {
   const { name, email, password } = req.body || {}
 
   if (!name || !email || !password) {
@@ -33,7 +33,7 @@ async function signup(req, res) {
   })
 }
 
-async function login(req, res) {
+export async function login(req, res) {
   const { email, password } = req.body || {}
 
   if (!email || !password) {
@@ -57,13 +57,13 @@ async function login(req, res) {
   })
 }
 
-async function me(req, res) {
+export async function me(req, res) {
   const user = await User.findById(req.user?.userId).select('name email profilePicture createdAt').lean()
   if (!user) return res.status(404).json({ message: 'User not found.' })
   return res.json({ user })
 }
 
-async function updateProfile(req, res) {
+export async function updateProfile(req, res) {
   const { name } = req.body || {}
   if (!name || !String(name).trim()) {
     return res.status(400).json({ message: 'name is required.' })
@@ -79,12 +79,11 @@ async function updateProfile(req, res) {
   return res.json({ user })
 }
 
-async function updateProfilePicture(req, res) {
+export async function updateProfilePicture(req, res) {
   const { profilePicture } = req.body || {}
   if (!profilePicture || !String(profilePicture).startsWith('data:image')) {
     return res.status(400).json({ message: 'A valid image data URL is required.' })
   }
-  // Limit size to ~500KB base64
   if (profilePicture.length > 700000) {
     return res.status(400).json({ message: 'Image is too large. Please use a smaller image.' })
   }
@@ -96,6 +95,4 @@ async function updateProfilePicture(req, res) {
   if (!user) return res.status(404).json({ message: 'User not found.' })
   return res.json({ user })
 }
-
-module.exports = { signup, login, me, updateProfile, updateProfilePicture }
 

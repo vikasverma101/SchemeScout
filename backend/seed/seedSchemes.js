@@ -1,4 +1,4 @@
-const Scheme = require('../models/Scheme')
+import Scheme from '../models/Scheme.js'
 
 const sampleSchemes = [
   {
@@ -373,5 +373,5 @@ async function seedSchemesIfEmpty() {
   return { inserted: sampleSchemes.length, skipped: false }
 }
 
-module.exports = { seedSchemesIfEmpty }
+export { seedSchemesIfEmpty }
 

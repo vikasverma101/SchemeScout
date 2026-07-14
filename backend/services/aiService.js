@@ -1,6 +1,6 @@
-const axios = require('axios')
+import axios from 'axios'
 
-function buildRecommendationPayload({ user, schemes }) {
+export function buildRecommendationPayload({ user, schemes }) {
   const topSchemes = Array.isArray(schemes) ? schemes.slice(0, 3) : []
   const userName = user?.name || user?.fullName || 'the applicant'
   const income = user?.income != null ? Number(user.income) : null
@@ -38,11 +38,11 @@ function buildRecommendationPayload({ user, schemes }) {
   }
 }
 
-function buildFallbackRecommendation({ user, schemes }) {
+export function buildFallbackRecommendation({ user, schemes }) {
   return buildRecommendationPayload({ user, schemes })
 }
 
-function normalizeAiJson(raw) {
+export function normalizeAiJson(raw) {
   if (!raw || typeof raw !== 'string') return null
   const trimmed = raw.trim()
   if (!trimmed) return null
@@ -105,13 +105,7 @@ function normalizeAiJson(raw) {
   }
 }
 
-/**
- * Get AI recommendation using OpenRouter API.
- * @param {Object} userData
- * @param {Array} schemes
- * @returns {Promise<string>}
- */
-async function getAIRecommendation({ user, schemes }) {
+export async function getAIRecommendation({ user, schemes }) {
   const apiKey = process.env.OPENROUTER_API_KEY
 
   if (!apiKey || apiKey === 'your_key_here') {
@@ -145,7 +139,6 @@ User: ${JSON.stringify(user ?? {})}
 Schemes: ${JSON.stringify(mappedSchemes)}
 `
 
-    // eslint-disable-next-line no-console
     console.log('[AI Service] Fetching recommendation from OpenRouter...')
 
     const response = await axios.post(
@@ -169,7 +162,6 @@ Schemes: ${JSON.stringify(mappedSchemes)}
 
     const message = response?.data?.choices?.[0]?.message?.content
 
-    // eslint-disable-next-line no-console
     console.log('[AI Service] Recommendation successfully received.')
 
     if (message && message.trim()) {
@@ -181,10 +173,7 @@ Schemes: ${JSON.stringify(mappedSchemes)}
 
     return JSON.stringify(buildFallbackRecommendation({ user, schemes }))
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('[AI Service Error]:', error?.response?.data || error?.message)
     return JSON.stringify(buildFallbackRecommendation({ user, schemes }))
   }
 }
-
-module.exports = { buildRecommendationPayload, getAIRecommendation, normalizeAiJson }

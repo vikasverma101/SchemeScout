@@ -1,13 +1,13 @@
-const Scheme = require('../models/Scheme')
-const { getAIRecommendation } = require('../services/aiService')
-const { getGeminiSchemes }    = require('../services/geminiSchemesService')
+import Scheme from '../models/Scheme.js'
+import { getAIRecommendation } from '../services/aiService.js'
+import { getGeminiSchemes } from '../services/geminiSchemesService.js'
 
 function toNumber(value) {
   const n = Number(value)
   return Number.isFinite(n) ? n : NaN
 }
 
-async function postSchemes(req, res) {
+export async function postSchemes(req, res) {
   const { category, state, income, type, age, occupation, gender } = req.body || {}
 
   if (!category || !state || income === undefined || income === null) {
@@ -21,10 +21,9 @@ async function postSchemes(req, res) {
     return res.status(400).json({ message: 'income must be a valid number.' })
   }
 
-  let schemes      = []
+  let schemes = []
   let schemeSource = 'gemini'
 
-  /* ── 1. Try Gemini first (real-time) ─────────────── */
   try {
     console.log('[SchemeScout] Fetching real-time schemes from Gemini...')
     schemes = await getGeminiSchemes({ category, state, income: incomeNum, age, occupation, gender, type })
@@ -33,11 +32,10 @@ async function postSchemes(req, res) {
     console.warn('[SchemeScout] Gemini fetch failed, falling back to DB:', geminiErr.message)
     schemeSource = 'database'
 
-    /* ── 2. Fallback: MongoDB ─────────────────────── */
     const query = { incomeLimit: { $gte: incomeNum } }
     if (category && category !== 'All') query.category = { $in: [category, 'All'] }
-    if (state    && state    !== 'All') query.state    = { $in: [state,    'All'] }
-    if (type     && type     !== 'all') query.type     = type
+    if (state && state !== 'All') query.state = { $in: [state, 'All'] }
+    if (type && type !== 'all') query.type = type
 
     schemes = await Scheme.find(query)
       .sort({ incomeLimit: 1, createdAt: -1 })
@@ -45,7 +43,6 @@ async function postSchemes(req, res) {
       .lean()
   }
 
-  /* ── 3. AI recommendation payload (OpenRouter) ─────── */
   let aiRecommendation = {
     summary: 'Showing best schemes based on your eligibility',
     recommendedSchemes: [],
@@ -73,5 +70,3 @@ async function postSchemes(req, res) {
     lastUpdated: new Date().toISOString(),
   })
 }
-
-module.exports = { postSchemes }

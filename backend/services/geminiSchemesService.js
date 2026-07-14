@@ -1,10 +1,10 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai')
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 /**
  * Fetch real-time Indian government schemes from Gemini AI
  * based on the user's profile.
  */
-async function getGeminiSchemes({ category, state, income, age, occupation, gender, type }) {
+export async function getGeminiSchemes({ category, state, income, age, occupation, gender, type }) {
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) throw new Error('GEMINI_API_KEY is not set in .env')
 
@@ -105,5 +105,3 @@ Rules:
 
   throw lastErr || new Error('Gemini scheme fetch failed for all model candidates')
 }
-
-module.exports = { getGeminiSchemes }

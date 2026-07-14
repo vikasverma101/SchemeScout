@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import axios from 'axios'
 import './index.css'
 import App from './App.jsx'
 import LandingPage from './pages/LandingPage.jsx'
@@ -14,6 +15,9 @@ import { AppSettingsProvider } from './context/AppSettingsContext.jsx'
 import ApplyPage from './pages/ApplyPage.jsx'
 import LearnMorePage from './pages/LearnMorePage.jsx'
 import SetupProfilePage from './pages/SetupProfilePage.jsx'
+
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || ''
+axios.defaults.withCredentials = true
 
 function ProtectedRoute({ children }) {
   const location = useLocation()

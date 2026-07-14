@@ -1,7 +1,7 @@
-const puppeteer = require('puppeteer')
-const Scheme = require('../models/Scheme')
+import puppeteer from 'puppeteer'
+import Scheme from '../models/Scheme.js'
 
-async function scrapeSchemes() {
+export async function scrapeSchemes() {
   // eslint-disable-next-line no-console
   console.log('Starting scraper service...')
   let browser
@@ -119,5 +119,3 @@ async function scrapeSchemes() {
     if (browser) await browser.close()
   }
 }
-
-module.exports = { scrapeSchemes }

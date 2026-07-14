@@ -1,11 +1,11 @@
-const express = require('express')
-const { saveScheme, listSavedSchemes } = require('../controllers/savedSchemesController')
-const { protect } = require('../middleware/authMiddleware')
+import express from 'express'
+import { saveScheme, listSavedSchemes } from '../controllers/savedSchemesController.js'
+import { protect } from '../middleware/authMiddleware.js'
 
 const router = express.Router()
 
 router.post('/', protect, saveScheme)
 router.get('/', protect, listSavedSchemes)
 
-module.exports = router
+export default router
 

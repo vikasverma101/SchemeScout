@@ -1,19 +1,31 @@
-const express = require('express')
-const cors = require('cors')
-require('dotenv').config()
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import schemesRoutes from './routes/schemesRoutes.js'
+import authRoutes from './routes/authRoutes.js'
+import savedSchemesRoutes from './routes/savedSchemesRoutes.js'
+import { connectDB } from './config/db.js'
+import { seedSchemesIfEmpty } from './seed/seedSchemes.js'
+import { initCronJobs } from './cron/cronJob.js'
 
-const schemesRoutes = require('./routes/schemesRoutes')
-const authRoutes = require('./routes/authRoutes')
-const savedSchemesRoutes = require('./routes/savedSchemesRoutes')
-const { connectDB } = require('./config/db')
-const { seedSchemesIfEmpty } = require('./seed/seedSchemes')
-const { initCronJobs } = require('./cron/cronJob')
+dotenv.config()
 
 const app = express()
 
+const allowedOrigins = (process.env.FRONTEND_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || true,
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)){
+      return callback(null, true)
+    }
+    return callback(new Error(`CORS policy blocked request from origin: ${origin}`), false)
+  },
   credentials: true,
+  optionsSuccessStatus: 200,
 }
 
 app.use(cors(corsOptions))
@@ -34,21 +46,17 @@ async function start() {
   if (dbReady) {
     await seedSchemesIfEmpty()
   } else {
-    // eslint-disable-next-line no-console
     console.warn('[DB] Skipping seed data load because MongoDB is unavailable.')
   }
 
-  // Initialize background tasks like scraper cron job
   initCronJobs()
 
   app.listen(PORT, () => {
-    // eslint-disable-next-line no-console
-    console.log(`Backend listening on http://localhost:${PORT}`)
+    console.log(`Backend listening on port ${PORT}`)
   })
 }
 
 start().catch((err) => {
-  // eslint-disable-next-line no-console
   console.error(err)
   process.exit(1)
 })
