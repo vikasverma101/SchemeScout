@@ -20,7 +20,7 @@ app.use(cors({
     origin:"https://schemescout-gv7e.onrender.com",
     credentials:true
 
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
 app.use(express.json())
 
 app.get('/health', (_req, res) => {
