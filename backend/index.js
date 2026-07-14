@@ -11,10 +11,14 @@ const { initCronJobs } = require('./cron/cronJob')
 
 const app = express()
 
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || true,
-  credentials: true,
-}
+// const corsOptions = {
+//   origin: process.env.FRONTEND_URL || true,
+//   credentials: true,
+// }
+
+app.use(cors({
+    origin:"https://schemescout-gv7e.onrender.com",
+    credentials:true
 
 app.use(cors(corsOptions))
 app.use(express.json())
