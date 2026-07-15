@@ -1,8 +1,10 @@
 # SchemeScout
 
 ![SchemeScout](https://img.shields.io/badge/AI-powered%20Government%20Scheme%20Finder-blue?style=flat&logo=ai)
-![MERN Stack](https://img.shields.io/badge/MERN%20Stack-React%2C%20Node%2C%20Express%2C%20MongoDB-brightgreen?style=flat)
+![Full Stack](https://img.shields.io/badge/MERN%20Stack-React%2C%20Node%2C%20Express%2C%20MongoDB-brightgreen?style=flat)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat)
+
+Live Demo: https://schemescout-gv7e.onrender.com/
 
 SchemeScout is an AI-powered Government Scheme Finder that helps users discover relevant schemes based on their profile. The platform matches age, income, category, occupation, and state to deliver personalized recommendations, eligibility summaries, and application guidance.
 
@@ -45,7 +47,7 @@ SchemeScout is an AI-powered Government Scheme Finder that helps users discover 
 
 ### AI Integration
 
-- OpenRouter API (or Gemini API if configured)
+- OpenRouter API and Gemini API
 
 ## Project Architecture
 
@@ -107,18 +109,6 @@ cd ../frontend
 npm install
 ```
 
-### Environment
-
-Create a `.env` file in `backend/` and populate it from `.env.example`.
-
-## Example `.env.example`
-
-```env
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/schemescout?retryWrites=true&w=majority
-JWT_SECRET=your_jwt_secret
-OPENROUTER_API_KEY=your_openrouter_api_key
-FRONTEND_URL=https://your-frontend.onrender.com
-```
 
 ## Running Locally
 
@@ -163,14 +153,13 @@ npm run dev
 
 ### Frontend
 
-Deploy the frontend to Render as a static site or a React web service.
+Deploy the frontend to Render as a static site.
 
 ### Backend
 
-Deploy the backend as a Node/Express service on Render.
+Deploy the backend as a web service on Render.
 
 ### Database
 
 Use MongoDB Atlas for production data storage.
 
-> For Render deployment, set `FRONTEND_URL` to your frontend service URL so the backend CORS policy only allows trusted requests.
