@@ -1,5 +1,6 @@
 import SchemeEligibilityForm from './components/SchemeEligibilityForm.jsx'
 import SchemeDetailsModal from './components/SchemeDetailsModal.jsx'
+import SharedMobileNav from './components/SharedMobileNav.jsx'
 import axios from 'axios'
 import { useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -15,8 +16,6 @@ import {
 
 // ─── Navbar ───────────────────────────────────────────────────────────
 function Navbar({ t, darkMode, setDarkMode, language, setLanguage, navigate, clearToken }) {
-  const [open, setOpen] = useState(false)
-
   return (
     <header style={{
         position: 'sticky', top: 0, zIndex: 100,
@@ -33,7 +32,7 @@ function Navbar({ t, darkMode, setDarkMode, language, setLanguage, navigate, cle
         </div>
 
         {/* Desktop Nav */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div className="hidden-mobile" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {[
             { label: 'Home', icon: Home, fn: () => navigate('/') },
             { label: t('account'), icon: LayoutDashboard, fn: () => navigate('/account') },
@@ -90,6 +89,20 @@ function Navbar({ t, darkMode, setDarkMode, language, setLanguage, navigate, cle
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.08)'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.2)' }}>
             <LogOut size={13} /> {t('logout')}
           </button>
+        </div>
+
+        <div className="show-mobile" style={{ display: 'none' }}>
+          <SharedMobileNav
+            title="SchemeScout"
+            brandTo="/"
+            menuItems={[
+              { label: 'Home', onClick: () => navigate('/') },
+              { label: t('account'), onClick: () => navigate('/account') },
+              { label: t('savedSchemes'), onClick: () => navigate('/saved') },
+              { label: t('profile'), onClick: () => navigate('/profile') },
+              { label: t('logout'), danger: true, onClick: () => { clearToken(); navigate('/login', { replace: true }) } },
+            ]}
+          />
         </div>
       </div>
     </header>

@@ -6,6 +6,7 @@ import axios from 'axios'
 import logo from '../assets/logo.png'
 import { isAuthenticated, getToken, clearToken } from '../utils/auth.js'
 import { useAppSettings, LanguagePicker, LANGUAGES, ACCENT_PRESETS } from '../context/AppSettingsContext.jsx'
+import SharedMobileNav from '../components/SharedMobileNav.jsx'
 
 /* ─── Starfield Background ────────────────────────────────── */
 const STARS = Array.from({ length: 200 }, (_, i) => ({
@@ -749,11 +750,26 @@ export default function LandingPage() {
         </div>
 
         {/* Mobile toggle */}
-        <motion.button type="button" whileTap={{ scale: 0.92 }} onClick={() => setMobileOpen(o => !o)}
-          style={{ display: 'none', padding: 8, background: 'rgba(99,102,241,0.08)', border: '1px solid var(--card-border)', borderRadius: 9, cursor: 'pointer', color: '#818cf8' }}
-          className="show-mobile">
-          {mobileOpen ? <X size={20} /> : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>}
-        </motion.button>
+        <div className="show-mobile" style={{ display: 'none' }}>
+          <SharedMobileNav
+            title="SchemeScout"
+            brandTo="/"
+            menuItems={[
+              { label: t('navHome'), onClick: () => { setMobileOpen(false); navigate('/') } },
+              { label: t('navFeatures'), onClick: () => { setMobileOpen(false); scrollTo('features') } },
+              { label: t('navHowItWorks'), onClick: () => { setMobileOpen(false); scrollTo('how-it-works') } },
+              ...(isLoggedIn ? [
+                { label: 'Check Eligibility', onClick: () => { setMobileOpen(false); navigate('/apply') } },
+                { label: 'Dashboard', onClick: () => { setMobileOpen(false); navigate('/dashboard') } },
+                { label: 'My Profile', onClick: () => { setMobileOpen(false); navigate('/profile') } },
+                { label: 'Logout', danger: true, onClick: () => { clearToken(); setMobileOpen(false); navigate('/login') } },
+              ] : [
+                { label: t('login'), onClick: () => { setMobileOpen(false); navigate('/login') } },
+                { label: t('createAccount'), highlight: true, onClick: () => { setMobileOpen(false); navigate('/signup') } },
+              ]),
+            ]}
+          />
+        </div>
       </nav>
 
       <AnimatePresence>
@@ -761,37 +777,21 @@ export default function LandingPage() {
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
             style={{ overflow: 'hidden', borderTop: '1px solid var(--card-border)', background: 'var(--nav-bg)', backdropFilter: 'blur(24px)' }}>
             <div style={{ padding: '16px 24px 20px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: 'rgba(99,102,241,0.06)', borderRadius: 12, border: '1px solid var(--card-border)', marginBottom: 4 }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: `linear-gradient(135deg, ${accentColor}, ${accentColor}99)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: '#fff' }}>
+                  {user?.profilePicture ? <img src={user.profilePicture} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (user?.name?.[0] || 'U').toUpperCase()}
+                </div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--page-color)' }}>{user?.name || 'User'}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{user?.email || ''}</div>
+                </div>
+              </div>
               {[['navHome', () => { setMobileOpen(false); navigate('/') }], ['navFeatures', () => scrollTo('features')], ['navHowItWorks', () => scrollTo('how-it-works')]].map(([key, fn]) => (
                 <button key={key} type="button" onClick={fn} style={{ padding: '10px 12px', background: 'none', border: 'none', textAlign: 'left', fontSize: 15, fontWeight: 500, color: 'var(--text-muted)', fontFamily: 'inherit', cursor: 'pointer' }}>{t(key)}</button>
               ))}
               <div style={{ height: 1, background: 'rgba(99,102,241,0.15)', margin: '4px 0' }} />
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '10px 12px', marginBottom: 6, background: 'rgba(99,102,241,0.06)', border: '1px solid var(--card-border)', borderRadius: 12 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--page-color)' }}>{darkMode ? 'Dark mode' : 'Light mode'}</span>
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.94 }}
-                  onClick={() => setDarkMode(v => !v)}
-                  aria-label="Toggle theme"
-                  style={{ position: 'relative', width: 46, height: 24, borderRadius: 999, border: darkMode ? '1px solid rgba(129,140,248,0.45)' : '1px solid rgba(251,191,36,0.55)', background: darkMode ? 'rgba(99,102,241,0.22)' : 'rgba(251,191,36,0.18)', display: 'flex', alignItems: 'center', padding: '2px', boxShadow: darkMode ? '0 0 8px rgba(99,102,241,0.25)' : '0 0 8px rgba(251,191,36,0.25)' }}>
-                  <motion.div
-                    animate={{ x: darkMode ? 0 : 22 }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                    style={{ width: 18, height: 18, borderRadius: '50%', background: darkMode ? 'linear-gradient(135deg,#818cf8,#6366f1)' : 'linear-gradient(135deg,#fbbf24,#f97316)' }}
-                  />
-                </motion.button>
-              </div>
               {isLoggedIn ? (
                 <>
-                  {/* Mobile profile card */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: 'rgba(99,102,241,0.06)', borderRadius: 12, border: '1px solid var(--card-border)', marginBottom: 4 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: `linear-gradient(135deg, ${accentColor}, ${accentColor}99)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: '#fff' }}>
-                      {user?.profilePicture ? <img src={user.profilePicture} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (user?.name?.[0] || 'U').toUpperCase()}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--page-color)' }}>{user?.name || 'User'}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{user?.email || ''}</div>
-                    </div>
-                  </div>
                   <button type="button" onClick={() => { setMobileOpen(false); navigate('/apply') }} style={{ padding: '10px 12px', background: 'none', border: 'none', textAlign: 'left', fontSize: 15, fontWeight: 600, color: '#818cf8', fontFamily: 'inherit', cursor: 'pointer' }}>Check Eligibility</button>
                   <Link to="/dashboard" onClick={() => setMobileOpen(false)} style={{ padding: '10px 12px', textDecoration: 'none', fontSize: 15, fontWeight: 500, color: 'var(--page-color)', display: 'flex', alignItems: 'center', gap: 8 }}><LayoutDashboard size={15} color="#818cf8" /> Dashboard</Link>
                   <Link to="/profile" onClick={() => setMobileOpen(false)} style={{ padding: '10px 12px', textDecoration: 'none', fontSize: 15, fontWeight: 500, color: 'var(--page-color)', display: 'flex', alignItems: 'center', gap: 8 }}><User size={15} color="#818cf8" /> My Profile</Link>

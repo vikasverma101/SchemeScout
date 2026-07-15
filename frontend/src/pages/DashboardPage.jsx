@@ -5,6 +5,7 @@ import { clearToken, getToken } from '../utils/auth'
 import { useAppSettings } from '../context/AppSettingsContext.jsx'
 import { Bookmark, LayoutDashboard, UserRound, ChevronRight, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
+import SharedMobileNav from '../components/SharedMobileNav.jsx'
 
 export default function DashboardPage() {
   const { t } = useAppSettings()
@@ -47,11 +48,25 @@ export default function DashboardPage() {
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(99,102,241,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,0.03) 1px,transparent 1px)', backgroundSize: '50px 50px', pointerEvents: 'none' }} />
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px', position: 'relative', zIndex: 1 }}>
-        {/* Back */}
-        <button type="button" onClick={() => navigate('/dashboard')} className="btn-ghost-outlined"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', marginBottom: 32 }}>
-          ← {t('backToHome')}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
+          <button type="button" onClick={() => navigate('/dashboard')} className="btn-ghost-outlined"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', flexShrink: 0 }}>
+            ← {t('backToHome')}
+          </button>
+
+          <div style={{ display: 'none', marginLeft: 'auto' }} className="show-mobile dashboard-mobile-menu">
+            <SharedMobileNav
+              title="Dashboard"
+              brandTo="/dashboard"
+              menuItems={[
+                { label: t('viewSavedSchemes'), onClick: () => navigate('/saved') },
+                { label: t('editProfile'), onClick: () => navigate('/profile') },
+                { label: 'Find Schemes', onClick: () => navigate('/dashboard') },
+                { label: 'Logout', danger: true, onClick: () => { clearToken(); navigate('/login', { replace: true }) } },
+              ]}
+            />
+          </div>
+        </div>
 
         <motion.div className="panel-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
           style={{ borderRadius: 24, padding: '32px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>

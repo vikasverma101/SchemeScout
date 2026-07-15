@@ -12,14 +12,22 @@ dotenv.config()
 
 const app = express()
 
-const allowedOrigins = (process.env.FRONTEND_URL || 'https://schemescout-gv7e.onrender.com')
+const defaultFrontendOrigins = [
+  'https://schemescout-gv7e.onrender.com',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+]
+
+const envOrigins = (process.env.FRONTEND_URL || '')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean)
 
+const allowedOrigins = Array.from(new Set([...defaultFrontendOrigins, ...envOrigins]))
+
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)){
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
       return callback(null, true)
     }
     return callback(new Error(`CORS policy blocked request from origin: ${origin}`), false)
